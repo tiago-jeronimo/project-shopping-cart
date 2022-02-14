@@ -1,3 +1,7 @@
+const listCart = document.querySelector('.cart__items');
+const buttonAdd = document.getElementsByClassName('item__add');
+const btnEsvaziar = document.querySelector('.empty-cart');
+
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -12,7 +16,7 @@ function createCustomElement(element, className, innerText) {
   return e;
 }
 
-function createProductItemElement({ sku, name, image }) {
+function createProductItemElement({ id: sku, title: name, thumbnail: image }) {
   const section = document.createElement('section');
   section.className = 'item';
 
@@ -29,10 +33,11 @@ function getSkuFromProductItem(item) {
 }
 
 function cartItemClickListener(event) {
-  // coloque seu código aqui
+  event.target.remove();
+  saveCartItems(listCart.innerHTML);
 }
 
-function createCartItemElement({ sku, name, salePrice }) {
+function createCartItemElement({ id: sku, title: name, price: salePrice }) {
   const li = document.createElement('li');
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
@@ -40,4 +45,28 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
-window.onload = () => { };
+ async function addCart(event) {
+  const clickButton = event.target.parentNode.firstChild.innerText;
+  const item = await fetchItem(clickButton);
+  listCart.appendChild(createCartItemElement(item));
+  saveCartItems(listCart.innerHTML);
+}
+
+function createEventBtn() {
+  for (let i = 0; i < buttonAdd.length; i += 1) {
+    buttonAdd[i].addEventListener('click', addCart);
+  }
+}
+window.onload = async () => {
+  const lists = document.getElementById('items');
+  const products = await fetchProducts('computador');
+  products.forEach((element) => {
+    lists.appendChild(createProductItemElement(element));
+  });
+  createEventBtn();
+  listCart.innerHTML = getSavedCartItems();
+ };
+ 
+ btnEsvaziar.addEventListener('click', () => {
+  listCart.innerHTML = '';
+ });
