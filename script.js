@@ -70,10 +70,15 @@ btnEsvaziar.addEventListener('click', () => {
 
 window.onload = async () => {
   const lists = document.getElementById('items');
+  const paragraph = document.createElement('p');
+  paragraph.innerText = 'carregando...';
+  paragraph.className = 'loading';
+  lists.appendChild(paragraph);
   const products = await fetchProducts('computador');
   products.forEach((element) => {
     lists.appendChild(createProductItemElement(element));
   });
+  paragraph.remove();
   createEventBtn();
   listCart.innerHTML = getSavedCartItems();
   removeRefresh();
